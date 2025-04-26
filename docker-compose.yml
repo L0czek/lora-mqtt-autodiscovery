@@ -1,0 +1,9 @@
+version: '3'
+services:
+  lora-mqtt-autodiscovery:
+    build: .
+    restart: unless-stopped
+    container_name: "lora-mqtt-autodiscovery"
+    environment:
+      - MQTT_HOST=http://lora-stack.plac.lan
+    
