@@ -7,7 +7,7 @@ import logging
 import json
 
 class LoraMqttEventHandler:
-    def __init__(self, sensors: List[LoraMqttSensor], mqtt_host_url: str, mqtt_port: int, mqtt_keepalice: int = 60) -> None:
+    def __init__(self, sensors: List[LoraMqttSensor], mqtt_host_url: str, mqtt_port: int, mqtt_user: str = None, mqtt_pass:str = None, mqtt_keepalice: int = 60) -> None:
         self.sensors = {
             sensor.device_profile():sensor for sensor in sensors
         }
@@ -15,12 +15,15 @@ class LoraMqttEventHandler:
         self.client = Client(CallbackAPIVersion.VERSION2)
 
         def _on_connect(client, userdata, flags, reason_code, properties):
-            self.client.subscribe("application/")
+            self.client.subscribe("#")
         self.client.on_connect = _on_connect
 
         def _on_message(client, userdata, msg):
             self._handle_message(msg.topic, msg.payload)
         self.client.on_message = _on_message
+
+        if mqtt_user is not None and mqtt_pass is not None:
+            self.client.username_pw_set(mqtt_user, mqtt_pass)
 
         self.client.connect(mqtt_host_url, mqtt_port, mqtt_keepalice)
 
@@ -36,6 +39,7 @@ class LoraMqttEventHandler:
             logging.error(f"Unknown device profile name {info.deviceProfileName}")
             return
 
+        self.devices.add(info.devEui)
         logging.info(f"Sending discovery message for {info.devEui} {info.deviceName}")
         messages = sensor.create_discovery_messages(info)
         for msg in messages:
@@ -51,7 +55,6 @@ class LoraMqttEventHandler:
             info = DeviceInfo.from_dict(payload['deviceInfo'])
 
             if info.devEui not in self.devices:
-                self.devices.add(info.devEui)
                 self._discover_device(info)
 
 

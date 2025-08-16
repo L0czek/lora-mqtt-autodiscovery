@@ -16,6 +16,8 @@ def main():
     logging.info("Starting MQTT client")
 
     mqtt_host = os.environ.get("MQTT_HOST")
+    mqtt_user = os.environ.get("MQTT_USER", None)
+    mqtt_pass = os.environ.get("MQTT_PASS", None)
 
     if mqtt_host is None:
         logging.error("MQTT_HOST env variable is not defined")
@@ -32,6 +34,8 @@ def main():
         sensors=sensors,
         mqtt_host_url=mqtt_host,
         mqtt_port=mqtt_port,
+        mqtt_user=mqtt_user,
+        mqtt_pass=mqtt_pass,
         mqtt_keepalice=mqtt_keepalive
     )
 
