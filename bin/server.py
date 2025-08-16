@@ -3,6 +3,7 @@
 import argparse
 import logging
 from hasslorasensor.client import LoraMqttEventHandler
+from hasslorasensor.sensors.lht52 import LHT52NSensor
 from hasslorasensor.sensors.lht65 import LHT65NSensor
 import os
 
@@ -27,7 +28,8 @@ def main():
     mqtt_keepalive = int(os.environ.get("MQTT_KEEPALIVE", "60"))
 
     sensors = [
-        LHT65NSensor()
+        LHT65NSensor(),
+        LHT52NSensor()
     ]
 
     server = LoraMqttEventHandler(
