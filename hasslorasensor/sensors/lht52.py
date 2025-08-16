@@ -6,7 +6,7 @@ class LHT52NSensor(LoraMqttSensor):
         super().__init__()
 
         self.measurements = {
-            "battery_voltage": Measurement(id="Bat_mV", device_class=DeviceClass.VOLTAGE),
+            "battery_voltage": Measurement(id="Bat_mV", device_class=DeviceClass.VOLTAGE, unit="mV"),
             "internal_temp_sensor": Measurement(id="TempC_SHT", device_class=DeviceClass.TEMPERATURE),
             "humidity_sensor": Measurement(id="Hum_SHT", device_class=DeviceClass.HUMIDITY)
         }
@@ -22,7 +22,8 @@ class LHT52NSensor(LoraMqttSensor):
                 device_class=measurement.device_class,
                 value_template="{{" + f"value_json.object.{measurement.id}" + "}}",
                 unique_id=f"{name}_{info.devEui}",
-                device=super().device(info)
+                device=super().device(info),
+                unit=measurement.unit
             )
                 for name, measurement in self.measurements.items()
         ]

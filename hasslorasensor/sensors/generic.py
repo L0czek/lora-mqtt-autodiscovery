@@ -21,6 +21,7 @@ class DeviceClass(str, Enum):
 class Measurement:
     id: str
     device_class: DeviceClass
+    unit: str | None = None
 
 @dataclass
 class Device:
@@ -35,6 +36,7 @@ class HassMqttSensor:
     value_template: str
     unique_id: str
     device: Device
+    unit: str | None = None
 
     @staticmethod
     def from_dict(data: dict) -> "HassMqttSensor":
@@ -55,7 +57,7 @@ class HassMqttSensor:
             "name": self.name,
             "state_topic": self.state_topic,
             "device_class": self.device_class.value,
-            "unit_of_measurement": self.device_class.unit(),
+            "unit_of_measurement": self.unit if self.unit is not None else self.device_class.unit(),
             "value_template": self.value_template,
             "unique_id": self.unique_id,
             "device": {
